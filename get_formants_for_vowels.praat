@@ -15,8 +15,8 @@
 # Please update the two variables below to refer to the correct tiers. It is
 # assumed that you have a tier containing only vowel segments, and a second
 # tier which contains the entire word as a segment (the label tier).
-vowel_tier = 2
-label_tier = 3
+vowel_tier = 1
+label_tier = 2
 
 #
 # Ok, go run the script
@@ -51,7 +51,7 @@ sound$ = selected$ ("Sound")
 selectObject: textgrid
 numberOfIntervals = Get number of intervals... 'vowel_tier'
 
-appendInfoLine: "Time	Start,Mid,End	Name	Word	Vowel	f1	f2	f3"
+appendInfoLine: "Time	Start,Mid,End,Avg	Name	Word	Vowel	f1	f2	f3"
 
 # Look through all intervals, picking out the ones with a non-blank label
 for interval to numberOfIntervals
@@ -59,38 +59,46 @@ for interval to numberOfIntervals
     if vowel$ <> ""
 	# if the interval has an unempty vowel label, get its start and end:
 	start = Get starting point... vowel_tier interval
+	start = start + 0.015
 	end = Get end point... vowel_tier interval
 	midpoint = (start + end) / 2
 
+	# And get the word (label)
+	word_interval = Get interval at time... label_tier start
+	word_label$ = Get label of interval... label_tier word_interval
+
 	# get the formant values at those points
-	@PrintFormants: 'start', "start"
-	@PrintFormants: 'midpoint', "midpoint"
-	@PrintFormants: 'end', "end"
+    	select Formant 'sound$'
+	@getFormants: 'start'
+	@PrintLn: string$('start'), "start", vowel$, word_label$, getFormants.f1, getFormants.f2, getFormants.f3
+	@getFormants: 'midpoint'
+	@PrintLn: string$('midpoint'), "midpoint", vowel$, word_label$, getFormants.f1, getFormants.f2, getFormants.f3
+	@getFormants: 'end'
+	@PrintLn: string$('end'), "end", vowel$, word_label$, getFormants.f1, getFormants.f2, getFormants.f3
+
+	# And special case the average formants
+	mean1 = Get mean: 1, start, end, "Hertz"
+	mean2 = Get mean: 2, start, end, "Hertz"
+	mean3 = Get mean: 3, start, end, "Hertz"
+	@PrintLn: "'start':'end'", "avg", vowel$, word_label$, mean1, mean2, mean3
 	selectObject: textgrid
     endif
 endfor
+
+procedure getFormants: .pointInTime
+    # Get the formants
+    .f1 = Get value at time... 1 .pointInTime Hertz Linear
+    .f2 = Get value at time... 2 .pointInTime Hertz Linear
+    .f3 = Get value at time... 3 .pointInTime Hertz Linear
+endproc
 
 # Get the formants at a given point in time
 # Args:
 #  .pointInTime: A double number of seconds in the file
 #  .timeLabel$: The label you want to give this point in time, eg "start"
-procedure PrintFormants: .pointInTime, .timeLabel$
-    selectObject: textgrid
-    # Get the vowel label
-    vowel_interval = Get interval at time... vowel_tier .pointInTime
-    vowel_label$ = Get label of interval... vowel_tier vowel_interval
-    # And get the word (label)
-    label_interval = Get interval at time... label_tier .pointInTime
-    label_label$ = Get label of interval... label_tier label_interval
-
-    # Get the formants
-    select Formant 'sound$'
-    f1 = Get value at time... 1 .pointInTime Hertz Linear
-    f2 = Get value at time... 2 .pointInTime Hertz Linear
-    f3 = Get value at time... 3 .pointInTime Hertz Linear
-
+procedure PrintLn: .pointInTime$, .timeLabel$, .vowelLabel$, .wordLabel$, .f1, .f2, .f3
     # Save result to text file:
-    resultline$ = "'.pointInTime'	'.timeLabel$'	'sound$'	'label_label$'	'vowel_label$'	'f1'	'f2'	'f3'"
+    resultline$ = "'.pointInTime$'	'.timeLabel$'	'sound$'	'.wordLabel$'	'.vowelLabel$'	'.f1'	'.f2'	'.f3'"
     appendInfoLine: "'resultline$'"
 endproc
 
