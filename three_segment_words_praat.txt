@@ -1,5 +1,7 @@
-phoneme_tier = 1
-word_tier = 2
+# This script allows you to auto-segment words into their component segments.
+# It assumes there's only three segments, that are separated into consistently
+# sized parts. You need to define the text label, and the percent of the total
+# word that that segment makes up. Please do that below.
 
 segment_1_label$ = "r"
 segment_1_pct = 0.25
@@ -7,6 +9,19 @@ segment_2_label$ = "i"
 segment_2_pct = 0.375
 segment_3_label$ = "d"
 segment_3_pct = 0.375
+
+#
+# ONE MORE STEP
+#
+# Please create a new tier for your phoneme segments. Then update the 
+# phoneme_tier and word_tier variables below to have the correct values.
+
+phoneme_tier = 1
+word_tier = 2
+
+#
+# OK, you're done. Go run the script.
+#
 
 textgrid = selected ("TextGrid")
 
