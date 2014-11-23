@@ -1,0 +1,41 @@
+phoneme_tier = 1
+word_tier = 2
+
+segment_1_label$ = "r"
+segment_1_pct = 0.25
+segment_2_label$ = "i"
+segment_2_pct = 0.375
+segment_3_label$ = "d"
+segment_3_pct = 0.375
+
+textgrid = selected ("TextGrid")
+
+selectObject: textgrid
+numberOfIntervals = Get number of intervals... 'word_tier'
+
+# Look through all intervals, picking out the ones with a non-blank label
+for interval to numberOfIntervals
+    word$ = Get label of interval... word_tier interval
+    if word$ <> ""
+        start = Get starting point... word_tier interval
+	end = Get end point... word_tier interval
+	# Create a boundary at the start point for the first segment
+	Insert boundary... phoneme_tier start
+	# Now add all the boundaries
+	segment_1_loc = (start + ((end - start) * segment_1_pct))
+	segment_2_loc = (segment_1_loc + ((end - start) * segment_2_pct))
+	segment_3_loc = (segment_2_loc + ((end - start) * segment_3_pct))
+	Insert boundary... phoneme_tier segment_1_loc
+	Insert boundary... phoneme_tier segment_2_loc
+	Insert boundary... phoneme_tier segment_3_loc
+	# And set the labels
+	interval_1 = Get interval at time... phoneme_tier (segment_1_loc - 0.01)
+	Set interval text... phoneme_tier interval_1 'segment_1_label$'
+	interval_2 = Get interval at time... phoneme_tier (segment_2_loc - 0.01)
+	Set interval text... phoneme_tier interval_2 'segment_2_label$'
+	interval_3 = Get interval at time... phoneme_tier (segment_3_loc - 0.01)
+	Set interval text... phoneme_tier interval_3 'segment_3_label$'
+    endif
+endfor
+
+selectObject: textgrid
