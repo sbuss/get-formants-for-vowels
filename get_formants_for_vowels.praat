@@ -87,9 +87,12 @@ endfor
 
 procedure getFormants: .pointInTime
     # Get the formants
-    .f1 = Get value at time... 1 .pointInTime Hertz Linear
-    .f2 = Get value at time... 2 .pointInTime Hertz Linear
-    .f3 = Get value at time... 3 .pointInTime Hertz Linear
+    #.f1 = Get value at time... 1 .pointInTime Hertz Linear
+    .f1 = Get mean: 1, .pointInTime, .pointInTime + 0.008, "Hertz"
+    #.f2 = Get value at time... 2 .pointInTime Hertz Linear
+    .f2 = Get mean: 2, .pointInTime, .pointInTime + 0.008, "Hertz"
+    #.f3 = Get value at time... 3 .pointInTime Hertz Linear
+    .f3 = Get mean: 3, .pointInTime, .pointInTime + 0.008, "Hertz"
 endproc
 
 # Get the formants at a given point in time
