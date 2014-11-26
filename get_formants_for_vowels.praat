@@ -59,7 +59,7 @@ for interval to numberOfIntervals
     if vowel$ <> ""
 	# if the interval has an unempty vowel label, get its start and end:
 	start = Get starting point... vowel_tier interval
-	start = start + 0.015
+	start = start + 0.005
 	end = Get end point... vowel_tier interval
 	midpoint = (start + end) / 2
 
